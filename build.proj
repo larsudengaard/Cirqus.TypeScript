@@ -1,0 +1,60 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputFolder>build</OutputFolder>
+    <ToolsFolder>tools</ToolsFolder>
+    <Nuget>$(ToolsFolder)\Nuget.exe</Nuget>
+  </PropertyGroup>
+
+  <Import Project="$(ToolsFolder)\FileReplace.targets" /> 
+  <UsingTask TaskName="Microsoft.Build.Tasks.XmlPoke" AssemblyName="Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"/>
+
+  <Target Name="Prepare">
+    <RemoveDir Directories="$(OutputFolder)" ContinueOnError="true"/>
+    <MakeDir Directories="$(OutputFolder)" ContinueOnError="true"/>
+  </Target>
+
+  <Target Name="ValidateVersion">
+    <Error Condition="'$(Version)' == ''" Text="No version specified! The version parameter must be specified in order to build &amp; release NuGet packages."/>
+    <Error Condition="!$([System.Text.RegularExpressions.Regex]::IsMatch('$(Version)', '^\d+\.\d+\.\d+(\-.+)?$'))" Text="Specified version is not correct format."/>
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="Prepare;ValidateVersion">
+    <ItemGroup>
+     <AssemblyInfos Include=".\**\AssemblyInfo.cs" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <AssemblyVersion>$([System.Text.RegularExpressions.Regex]::Replace('$(Version)', '^(\d+\.\d+)\.\d+(\-.+)?$', '$1'))</AssemblyVersion>
+      <AssemblyFileVersion>$([System.Text.RegularExpressions.Regex]::Replace('$(Version)', '^(\d+\.\d+\.\d+)(\-.+)?$', '$1'))</AssemblyFileVersion>
+    </PropertyGroup>
+
+    <FileReplace 
+      Files="@(AssemblyInfos)" 
+      Match='AssemblyVersion\(".+"\);AssemblyFileVersion\(".+"\);AssemblyInformationalVersion\(".+"\)'
+      ReplaceWith='AssemblyVersion("$(AssemblyVersion)");AssemblyFileVersion("$(AssemblyFileVersion)");AssemblyInformationalVersion("$(Version)")' />
+
+    <MSBuild Projects="Cirqus.TypeScript.sln" StopOnFirstFailure="true" Properties="Configuration=Release" />
+  </Target>
+
+  <Target Name="CreatePackages" DependsOnTargets="Build">
+    <ItemGroup>
+      <NuSpecs Include=".\**\*.nuspec"/>
+    </ItemGroup>
+
+    <MakeDir Directories="$(OutputFolder)"/>
+    
+    <XmlPoke XmlInputPath="%(NuSpecs.FullPath)" Query="//version" Value="$(Version)" />
+    <Exec Command="$(Nuget) pack %(NuSpecs.FullPath) -OutputDirectory $(OutputFolder)"/>
+    <XmlPoke XmlInputPath="%(NuSpecs.FullPath)" Query="//version" Value="$version$" />
+  </Target>
+
+  <Target Name="Deploy" DependsOnTargets="CreatePackages">
+    <ItemGroup>
+      <GeneratedPackages Include="$(OutputFolder)/*.nupkg"/>
+    </ItemGroup>
+
+    <Exec Command="$(NuGet) push %(GeneratedPackages.FullPath)"/>
+    <Exec Command="git tag $(Version)" />
+    <Message Text="Tagged commit with tag '%VERSION%' - push tags to origin with 'git push --tags'" />
+  </Target>
+</Project>

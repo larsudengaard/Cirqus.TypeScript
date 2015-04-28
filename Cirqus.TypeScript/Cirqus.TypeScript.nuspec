@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Cirqus.TypeScript</id>
+    <version>$version$</version>
+    <authors>Lars Udengaard</authors>
+    <owners>Lars Udengaard</owners>
+    <licenseUrl>http://github.com/larsudengaard/Cirqus.TypeScript</licenseUrl>
+    <projectUrl>http://github.com/larsudengaard/Cirqus.TypeScript</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Console application used to generated TypeScript typedefinitions for Cirqus commands and views.</description>
+    <releaseNotes>
+    </releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>
+    </tags>
+    <dependencies>
+      <dependency id="d60.Cirqus" version="" />
+      <dependency id="Serilog" version="" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\Cirqus.TypeScript.exe" target="lib\net45" />
+    <file src="bin\Release\Cirqus.TypeScript.pdb" target="lib\net45" />
+    <file src="bin\Release\Cirqus.TypeScript.exe.config" target="lib\net45" />
+  </files>
+</package>
