@@ -12,7 +12,7 @@ namespace Cirqus.TypeScript
             try
             {
                 Console.WriteLine(@"-----------------------------------------------------------------------------
-             d60 Cirqus TypeScript client code generator
+             Cirqus TypeScript client code generator
 -----------------------------------------------------------------------------");
 
                 Run(args);
@@ -39,11 +39,11 @@ namespace Cirqus.TypeScript
             {
                 throw new PrettyException(@"Please call the tool like this:
 
-    d60.Cirqus.TsClient <path-to-DLL> <output-directory>
+    Cirqus.TypeScript <path-to-DLL> <output-directory>
 
 where <path-to-DLL> should point to an assembly containing all of your commands,
 and <output-directory> should be the directory in which you want the generated
-'commands.ts','commandProcessor.ts', 'views.ts' and 'common.ts' to be put.");
+'api.ts' to be put.");
             }
 
             var sourceDll = args[0];

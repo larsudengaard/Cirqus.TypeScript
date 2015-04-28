@@ -75,7 +75,7 @@ namespace Cirqus.TypeScript.Generation
         }
 
         const string HeaderTemplate = @"/* 
-    Generated with d60.Cirqus.TsClient.exe
+    Generated with Cirqus.TypeScript.exe
     Should not be edited directly - should probably be regenerated instead :)
     {0}{1}
 */";
