@@ -4,11 +4,11 @@ using System.Reflection;
 
 namespace Cirqus.TypeScript.Configuration
 {
-    public abstract class TsClientConfigurator
+    public abstract class TypeScriptConfigurator
     {
         private readonly Configuration _configuration;
 
-        protected TsClientConfigurator()
+        protected TypeScriptConfigurator()
         {
             _configuration = new Configuration();
         }

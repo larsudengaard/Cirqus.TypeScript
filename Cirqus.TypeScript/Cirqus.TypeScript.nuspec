@@ -16,7 +16,6 @@
     </tags>
     <dependencies>
       <dependency id="d60.Cirqus" version="" />
-      <dependency id="Serilog" version="" />
     </dependencies>
   </metadata>
   <files>

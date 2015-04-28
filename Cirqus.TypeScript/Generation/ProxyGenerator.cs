@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using Cirqus.TypeScript.Configuration;
 using Cirqus.TypeScript.Model;
-using Serilog;
 
 namespace Cirqus.TypeScript.Generation
 {
@@ -28,7 +27,7 @@ namespace Cirqus.TypeScript.Generation
             var assembly = LoadAssembly(_sourceDll);
             var allTypes = GetTypes(assembly);
 
-            var configurators = allTypes.Where(x => typeof (TsClientConfigurator).IsAssignableFrom(x)).ToList();
+            var configurators = allTypes.Where(x => typeof (TypeScriptConfigurator).IsAssignableFrom(x)).ToList();
             if (configurators.Count > 1)
             {
                 throw new PrettyException("Found multiple configurations in command assembly, only one is supported.");
@@ -38,15 +37,15 @@ namespace Cirqus.TypeScript.Generation
             if (configurators.Count == 1)
             {
                 var configuratorType = configurators.Single();
-                var configurator = (TsClientConfigurator) Activator.CreateInstance(configuratorType);
+                var configurator = (TypeScriptConfigurator) Activator.CreateInstance(configuratorType);
                 configuration = configurator.Configure();
             }
 
             var commandTypes = allTypes.Where(ProxyGeneratorContext.IsCommand).ToList();
             var viewTypes = allTypes.Where(ProxyGeneratorContext.IsView).ToList();
 
-            Log.Logger.Information("Found {0} command types", commandTypes.Count);
-            Log.Logger.Information("Found {0} view types", viewTypes.Count);
+            Console.WriteLine("Found {0} command types", commandTypes.Count);
+            Console.WriteLine("Found {0} view types", viewTypes.Count);
 
             var context = new ProxyGeneratorContext(commandTypes.Concat(viewTypes), configuration);
 
@@ -78,7 +77,7 @@ namespace Cirqus.TypeScript.Generation
         {
             try
             {
-                Log.Logger.Information("Loading DLL {0}", filePath);
+                Console.WriteLine("Loading DLL {0}", filePath);
                 return Assembly.LoadFrom(Path.GetFullPath(filePath));
             }
             catch (BadImageFormatException exception)

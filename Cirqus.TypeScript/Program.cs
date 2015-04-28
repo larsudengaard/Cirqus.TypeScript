@@ -2,8 +2,6 @@
 using System.IO;
 using System.Linq;
 using Cirqus.TypeScript.Generation;
-using Serilog;
-using Serilog.Events;
 
 namespace Cirqus.TypeScript
 {
@@ -11,13 +9,9 @@ namespace Cirqus.TypeScript
     {
         static int Main(string [] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.ColoredConsole(LogEventLevel.Information)
-                .CreateLogger();
-
             try
             {
-                Log.Logger.Information(@"-----------------------------------------------------------------------------
+                Console.WriteLine(@"-----------------------------------------------------------------------------
              d60 Cirqus TypeScript client code generator
 -----------------------------------------------------------------------------");
 
@@ -27,14 +21,14 @@ namespace Cirqus.TypeScript
             }
             catch (PrettyException exception)
             {
-                Log.Logger.Information(exception, exception.Message);
+                Console.WriteLine(exception.Message);
 
                 return 1;
             }
             catch (Exception exception)
             {
-                Log.Logger.Error(exception, "Unhandled exception");
-
+                Console.WriteLine("Unhandled exception: {0}", exception.Message);
+                
                 return 2;
             }
         }
@@ -62,7 +56,7 @@ and <output-directory> should be the directory in which you want the generated
 
             if (!Directory.Exists(destinationDirectory))
             {
-                Log.Logger.Information("Creating directory {0}", destinationDirectory);
+                Console.WriteLine("Creating directory {0}", destinationDirectory);
                 Directory.CreateDirectory(destinationDirectory);
             }
 
@@ -70,7 +64,7 @@ and <output-directory> should be the directory in which you want the generated
             
             var results = proxyGenerator.Generate().ToList();
 
-            Log.Logger.Information("Writing files");
+            Console.WriteLine("Writing files");
             foreach (var result in results)
             {
                 result.WriteTo(destinationDirectory);

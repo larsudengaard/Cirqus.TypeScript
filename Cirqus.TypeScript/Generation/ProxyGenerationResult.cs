@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using Serilog;
 
 namespace Cirqus.TypeScript.Generation
 {
@@ -25,11 +24,11 @@ namespace Cirqus.TypeScript.Generation
 
             if (File.Exists(destinationFilePath) && !HasChanged(destinationFilePath))
             {
-                Log.Logger.Information("    No changes - skipping {0}", destinationFilePath);
+                Console.WriteLine("    No changes - skipping {0}", destinationFilePath);
                 return;
             }
 
-            Log.Logger.Information("    Writing {0}", destinationFilePath);
+            Console.WriteLine("    Writing {0}", destinationFilePath);
             var header = string.Format(HeaderTemplate, HashPrefix, GetHash());
             
             var output = new StringBuilder();
