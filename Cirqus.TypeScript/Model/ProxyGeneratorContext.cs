@@ -36,6 +36,8 @@ namespace Cirqus.TypeScript.Model
 
             AddBuiltInType(new BuiltInTypeDef(typeof(Command), @"export interface Command {
     Meta?: any;
+    $type: string;
+    $name: string;
 }", "Command"));
             AddBuiltInType(new BuiltInTypeDef(typeof(Metadata), "", "any") { Optional = true });
             AddBuiltInType(new BuiltInTypeDef(typeof(Guid), "export interface Guid {}", "Guid"));
@@ -191,8 +193,8 @@ namespace Cirqus.TypeScript.Model
                     _types.Values.Where(t => t.TypeType == TypeType.Command).OrderBy(t => t.FullyQualifiedTsTypeName))
             {
                 builder.AppendLine(string.Format(@"    public {0}(command: {1}) : void {{
-        command[""$type""] = ""{2}"";
-        command[""$name""] = ""{3}"";
+        command.$type = ""{2}"";
+        command.$name = ""{3}"";
         this.invokeCallback(command);
     }}", ToCamelCase(commandType), commandType.FullyQualifiedTsTypeName, commandType.AssemblyQualifiedName, commandType.Name.Name));
 
