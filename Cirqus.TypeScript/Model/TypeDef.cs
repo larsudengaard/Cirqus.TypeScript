@@ -73,7 +73,7 @@ namespace Cirqus.TypeScript.Model
 
         public virtual string GetCode(ProxyGeneratorContext context)
         {
-            return string.Format(@"export declare module {0} {{
+            return string.Format(@"export module {0} {{
     export interface {1}{2} {{
 {3}
     }}
