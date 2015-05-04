@@ -173,9 +173,9 @@ namespace Cirqus.TypeScript.Model
             var builder = new StringBuilder();
 
             builder.AppendLine(@"export class CommandProcessor {
-    private processCommandCallback: Function;
+    private processCommandCallback: (command: Command) => void;
 
-    constructor(processCommandCallback: Function) {
+    constructor(processCommandCallback: (command: Command) => void) {
         this.processCommandCallback = processCommandCallback;
     }
 
