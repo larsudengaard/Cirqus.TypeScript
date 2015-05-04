@@ -178,12 +178,6 @@ namespace Cirqus.TypeScript.Model
     constructor(processCommandCallback: (command: Command) => void) {
         this.processCommandCallback = processCommandCallback;
     }
-
-    public static newGuid() : Guid {
-        var guid = (this.g() + this.g() + ""-"" + this.g() + ""-"" + this.g() + ""-"" + this.g() + ""-"" + this.g() + this.g() + this.g());
-        
-        return guid.toUpperCase();
-    }
 ");
 
             foreach (
@@ -206,10 +200,6 @@ namespace Cirqus.TypeScript.Model
         } catch(error) {
             console.log(""Command processing error"", error);
         }
-    }
-
-    private static g() {
-        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     }
 }");
 
