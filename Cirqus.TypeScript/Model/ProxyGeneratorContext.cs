@@ -192,8 +192,9 @@ namespace Cirqus.TypeScript.Model
             {
                 builder.AppendLine(string.Format(@"    public {0}(command: {1}) : void {{
         command[""$type""] = ""{2}"";
+        command[""$name""] = ""{3}"";
         this.invokeCallback(command);
-    }}", ToCamelCase(commandType), commandType.FullyQualifiedTsTypeName, commandType.AssemblyQualifiedName));
+    }}", ToCamelCase(commandType), commandType.FullyQualifiedTsTypeName, commandType.AssemblyQualifiedName, commandType.Name.Name));
 
                 builder.AppendLine();
             }
