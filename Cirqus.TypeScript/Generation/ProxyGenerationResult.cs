@@ -7,7 +7,7 @@ namespace Cirqus.TypeScript.Generation
 {
     class ProxyGenerationResult
     {
-        static readonly Encoding Encoding = Encoding.UTF8;
+        static readonly Encoding Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
         readonly string _filename;
         readonly string _code;
