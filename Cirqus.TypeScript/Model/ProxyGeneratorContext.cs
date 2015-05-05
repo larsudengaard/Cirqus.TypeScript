@@ -65,11 +65,37 @@ namespace Cirqus.TypeScript.Model
                    ?? CreateTypeDef(qualifiedClassName, type);
         }
 
+        public static Type GetClosedGenericInterfaceFromImplementation(Type implementation, Type openGenericInterface)
+        {
+            if (implementation.IsGenericType && implementation.GetGenericTypeDefinition() == openGenericInterface)
+                return implementation;
+
+            if (!openGenericInterface.IsInterface)
+                throw new NotSupportedException(string.Format("Method only supports interfaces, the supplied type was not an interface: {0}", openGenericInterface.FullName));
+
+            return implementation.GetInterfaces().FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == openGenericInterface);
+        }
+
         TypeDef CreateSpecialTypeDefOrNull(Type type)
         {
             BuiltInTypeDef typeDef = null;
 
-            if (typeof(IEnumerable).IsAssignableFrom(type))
+            if (typeof (IDictionary).IsAssignableFrom(type))
+            {
+                var dictionaryType = GetClosedGenericInterfaceFromImplementation(type, typeof (IDictionary<,>));
+                if (dictionaryType == null)
+                    throw new NotSupportedException("Only dictionaries that implement IDictionary<TKey, TValue> is supported");
+
+                var keyType = dictionaryType.GetGenericArguments()[0];
+                var valueType = dictionaryType.GetGenericArguments()[1];
+                var keyDef = GetOrCreateTypeDef(new QualifiedClassName(keyType), keyType);
+                var valueDef = GetOrCreateTypeDef(new QualifiedClassName(valueType), valueType);
+
+                typeDef = new BuiltInTypeDef(type, "", string.Format("Map<{0}, {1}>", 
+                    keyDef.FullyQualifiedTsTypeName,
+                    valueDef.FullyQualifiedTsTypeName));
+            }
+            else if (typeof(IEnumerable).IsAssignableFrom(type))
             {
                 if (type.IsArray && type.GetArrayRank() == 1)
                 {
