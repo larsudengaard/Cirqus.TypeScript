@@ -14,6 +14,7 @@ namespace Cirqus.TypeScript.Model
     {
         readonly Configuration.Configuration _configuration;
         readonly Dictionary<Type, TypeDef> _types = new Dictionary<Type, TypeDef>();
+        bool _generateDictionaryDefinition;
 
         public ProxyGeneratorContext(IEnumerable<Type> types, Configuration.Configuration configuration)
         {
@@ -91,9 +92,16 @@ namespace Cirqus.TypeScript.Model
                 var keyDef = GetOrCreateTypeDef(new QualifiedClassName(keyType), keyType);
                 var valueDef = GetOrCreateTypeDef(new QualifiedClassName(valueType), valueType);
 
-                typeDef = new BuiltInTypeDef(type, "", string.Format("Map<{0}, {1}>", 
-                    keyDef.FullyQualifiedTsTypeName,
-                    valueDef.FullyQualifiedTsTypeName));
+                if (keyDef.FullyQualifiedTsTypeName != "string")
+                {
+                    throw new NotSupportedException(
+                        string.Format("Only dictionaries with string key is supported. Key: {0}, TypeScript key: {1}", 
+                        keyType, 
+                        keyDef.FullyQualifiedTsTypeName));
+                }
+
+                _generateDictionaryDefinition = true;
+                typeDef = new BuiltInTypeDef(type, "", string.Format("Dictionary<{0}>", valueDef.FullyQualifiedTsTypeName));
             }
             else if (typeof(IEnumerable).IsAssignableFrom(type))
             {
@@ -228,6 +236,14 @@ namespace Cirqus.TypeScript.Model
         }
     }
 }");
+
+            if (_generateDictionaryDefinition)
+            {
+                builder.Append(@"export interface Dictionary<T>
+{
+    [key: string]: T;
+}");
+            }
 
             return builder.ToString();
         }

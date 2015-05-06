@@ -52,7 +52,7 @@ namespace Cirqus.TypeScript.Generation
             var apiCode = context.GetDefinitions(TypeType.Command, TypeType.View, TypeType.Other, TypeType.Primitive);
             var commandProcessorCode = context.GetCommandProcessorDefinitation();
 
-            yield return new ProxyGenerationResult("api.ts", apiCode + "\n\n" + commandProcessorCode);
+            yield return new ProxyGenerationResult(apiCode + "\n\n" + commandProcessorCode);
         }
 
         Type[] GetTypes(Assembly assembly)
