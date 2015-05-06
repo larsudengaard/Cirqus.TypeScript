@@ -39,22 +39,24 @@ namespace Cirqus.TypeScript
             {
                 throw new PrettyException(@"Please call the tool like this:
 
-    Cirqus.TypeScript <path-to-DLL> <output-directory>
+    Cirqus.TypeScript <path-to-DLL> <output-file>
 
 where <path-to-DLL> should point to an assembly containing all of your commands,
-and <output-directory> should be the directory in which you want the generated
+and <output-file> should be the directory in which you want the generated
 'api.ts' to be put.");
             }
 
             var sourceDll = args[0];
-            var destinationDirectory = args[1];
+            var destinationFilePath = args[1];
 
             if (!File.Exists(sourceDll))
             {
                 throw new FileNotFoundException(string.Format("Could not find source DLL {0}", sourceDll));
             }
 
-            if (!Directory.Exists(destinationDirectory))
+            var destinationDirectory = Path.GetDirectoryName(destinationFilePath);
+            if (destinationDirectory != null &&
+                !Directory.Exists(destinationDirectory))
             {
                 Console.WriteLine("Creating directory {0}", destinationDirectory);
                 Directory.CreateDirectory(destinationDirectory);
@@ -67,7 +69,7 @@ and <output-directory> should be the directory in which you want the generated
             Console.WriteLine("Writing files");
             foreach (var result in results)
             {
-                result.WriteTo(destinationDirectory);
+                result.WriteTo(destinationFilePath);
             }
         }
     }

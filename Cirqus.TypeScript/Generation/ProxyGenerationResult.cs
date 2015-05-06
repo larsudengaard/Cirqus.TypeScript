@@ -9,19 +9,15 @@ namespace Cirqus.TypeScript.Generation
     {
         static readonly Encoding Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
-        readonly string _filename;
         readonly string _code;
 
-        public ProxyGenerationResult(string filename, string code)
+        public ProxyGenerationResult(string code)
         {
-            _filename = filename;
             _code = code;
         }
 
-        public void WriteTo(string destinationDirectory)
+        public void WriteTo(string destinationFilePath)
         {
-            var destinationFilePath = Path.Combine(destinationDirectory, _filename);
-
             if (File.Exists(destinationFilePath) && !HasChanged(destinationFilePath))
             {
                 Console.WriteLine("    No changes - skipping {0}", destinationFilePath);
