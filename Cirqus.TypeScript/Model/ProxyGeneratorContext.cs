@@ -202,40 +202,9 @@ namespace Cirqus.TypeScript.Model
             return type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
         }
 
-        public string GetCommandProcessorDefinitation()
+        public string GetSystemDefinitions()
         {
             var builder = new StringBuilder();
-
-            builder.AppendLine(@"export class CommandProcessor {
-    private processCommandCallback: (command: Command) => void;
-
-    constructor(processCommandCallback: (command: Command) => void) {
-        this.processCommandCallback = processCommandCallback;
-    }
-");
-
-            foreach (
-                var commandType in
-                    _types.Values.Where(t => t.TypeType == TypeType.Command).OrderBy(t => t.FullyQualifiedTsTypeName))
-            {
-                builder.AppendLine(string.Format(@"    public {0}(command: {1}) : void {{
-        (<any>command).$type = ""{2}"";
-        (<any>command).$name = ""{3}"";
-        this.invokeCallback(command);
-    }}", ToCamelCase(commandType), commandType.FullyQualifiedTsTypeName, commandType.AssemblyQualifiedName, commandType.Name.Name));
-
-                builder.AppendLine();
-            }
-
-
-            builder.AppendLine(@"    private invokeCallback(command: Command) : void {
-        try {
-            this.processCommandCallback(command);
-        } catch(error) {
-            console.log(""Command processing error"", error);
-        }
-    }
-}");
 
             if (_generateDictionaryDefinition)
             {

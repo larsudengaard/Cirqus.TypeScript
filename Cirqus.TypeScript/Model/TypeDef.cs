@@ -61,12 +61,14 @@ namespace Cirqus.TypeScript.Model
             {
                 if (Type == null)
                 {
-                    return string.Format(".NET type has not been set on type def for {0}", Name);
+                    return null;
                 }
+                
                 if (Type.AssemblyQualifiedName == null)
                 {
-                    return string.Format(".NET type on type def for {0} seems to have NULL as its assembly qualified name", Name);
+                    return null;
                 }
+
                 return string.Join(",", Type.AssemblyQualifiedName.Split(',').Take(2));
             }
         }
@@ -74,26 +76,37 @@ namespace Cirqus.TypeScript.Model
         public virtual string GetCode(ProxyGeneratorContext context)
         {
             return string.Format(@"export module {0} {{
-    export interface {1}{2} {{
+    export class {1}{2} {{
 {3}
     }}
-}}", Name.Ns, Name.Name, GetExtensionText(), FormatProperties());
+}}", Name.Ns, Name.Name, GetExtensionText(), string.Join(Environment.NewLine, FormatProperties()));
         }
 
         string GetExtensionText()
         {
             if (_baseType == null) return "";
 
-            return string.Format(" extends {0}", _baseType.FullyQualifiedTsTypeName);
+            return string.Format(" implements {0}", _baseType.FullyQualifiedTsTypeName);
         }
 
-        string FormatProperties()
+        IEnumerable<string> FormatProperties()
         {
-            return string.Join(Environment.NewLine, Properties
-                .Select(p => string.Format("        {0}{1}: {2};",
+            const string indentation = "        ";
+
+            if (TypeType == TypeType.Command)
+            {
+                yield return string.Format("{0}$commandType = \"{1}\";", indentation, AssemblyQualifiedName);
+                yield return string.Format("{0}$commandName = \"{1}\";", indentation, Name.Name);
+            }
+
+            foreach (var p in Properties)
+            {
+                yield return string.Format("{0}{1}{2}: {3};",
+                    indentation,
                     p.Name,
                     p.Type.Optional ? "?" : "",
-                    p.Type.FullyQualifiedTsTypeName)));
+                    p.Type.FullyQualifiedTsTypeName);
+            }
         }
     }
 }

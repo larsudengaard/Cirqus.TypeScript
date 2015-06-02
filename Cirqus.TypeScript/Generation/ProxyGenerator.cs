@@ -50,9 +50,9 @@ namespace Cirqus.TypeScript.Generation
             var context = new ProxyGeneratorContext(commandTypes.Concat(viewTypes), configuration);
 
             var apiCode = context.GetDefinitions(TypeType.Command, TypeType.View, TypeType.Other, TypeType.Primitive);
-            var commandProcessorCode = context.GetCommandProcessorDefinitation();
+            var systemCode = context.GetSystemDefinitions();
 
-            yield return new ProxyGenerationResult(apiCode + "\n\n" + commandProcessorCode);
+            yield return new ProxyGenerationResult(apiCode + systemCode);
         }
 
         Type[] GetTypes(Assembly assembly)
