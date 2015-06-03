@@ -168,7 +168,7 @@ namespace Cirqus.TypeScript.Model
             }
 
             var typeDef = IsCommand(type)
-                ? new TypeDef(qualifiedClassName, TypeType.Command, GetTypeFor(typeof (Command)), type)
+                ? new CommandTypeDef(qualifiedClassName, GetTypeFor(typeof (Command)), type)
                 : IsView(type)
                     ? new TypeDef(qualifiedClassName, TypeType.View)
                     : new TypeDef(qualifiedClassName, TypeType.Other);

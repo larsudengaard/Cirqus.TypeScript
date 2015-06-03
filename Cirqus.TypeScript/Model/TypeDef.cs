@@ -6,8 +6,10 @@ namespace Cirqus.TypeScript.Model
 {
     class TypeDef
     {
-        readonly TypeDef _baseType;
-        readonly List<PropertyDef> _properties = new List<PropertyDef>();
+        protected const string indent = "    ";
+
+        protected readonly List<PropertyDef> _properties = new List<PropertyDef>();
+        protected readonly TypeDef _baseType;
 
         public TypeDef(QualifiedClassName name, TypeType typeType)
             : this(name, typeType, null, null)
@@ -75,11 +77,16 @@ namespace Cirqus.TypeScript.Model
 
         public virtual string GetCode(ProxyGeneratorContext context)
         {
-            return string.Format(@"export module {0} {{
+            const string left = indent + indent;
+
+            return string.Format(
+@"export module {0} {{
     export class {1}{2} {{
 {3}
     }}
-}}", Name.Ns, Name.Name, GetExtensionText(), string.Join(Environment.NewLine, FormatProperties()));
+}}", 
+   Name.Ns, Name.Name, GetExtensionText(), 
+   left + string.Join(Environment.NewLine + left, GetTypedProperties().Select(EndOfStatement)));
         }
 
         string GetExtensionText()
@@ -89,29 +96,23 @@ namespace Cirqus.TypeScript.Model
             return string.Format(" implements {0}", _baseType.FullyQualifiedTsTypeName);
         }
 
-        IEnumerable<string> FormatProperties()
+        protected virtual IEnumerable<string> GetTypedProperties()
         {
-            const string indentation = "        ";
-
-            if (TypeType == TypeType.Command)
-            {
-                yield return string.Format("{0}$commandType = \"{1}\";", indentation, AssemblyQualifiedName);
-                yield return string.Format("{0}$commandName = \"{1}\";", indentation, Name.Name);
-            }
-
-            foreach (var p in Properties)
-            {
-                yield return string.Format("{0}{1}{2}: {3};",
-                    indentation,
+            return Properties.Select(p =>
+                string.Format("{0}{1}: {2}",
                     ToCamelCase(p.Name),
                     p.Type.Optional ? "?" : "",
-                    p.Type.FullyQualifiedTsTypeName);
-            }
+                    p.Type.FullyQualifiedTsTypeName));
         }
 
-        static string ToCamelCase(string str)
+        protected static string ToCamelCase(string str)
         {
             return char.ToLower(str[0]) + str.Substring(1);
+        }
+
+        protected static string EndOfStatement(string x)
+        {
+            return string.Format("{0};", x);
         }
     }
 }
