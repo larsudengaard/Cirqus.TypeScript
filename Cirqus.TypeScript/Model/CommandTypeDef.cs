@@ -41,7 +41,7 @@ namespace Cirqus.TypeScript.Model
         IEnumerable<string> FormatInit()
         {
             return _properties.Select(property => 
-                string.Format("this.{0} = {0};", ToCamelCase(property.Name)));
+                string.Format("this.{0} = args.{0};", ToCamelCase(property.Name)));
         }
 
         string GetExtensionText()
