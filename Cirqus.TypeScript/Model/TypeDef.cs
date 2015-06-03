@@ -103,10 +103,15 @@ namespace Cirqus.TypeScript.Model
             {
                 yield return string.Format("{0}{1}{2}: {3};",
                     indentation,
-                    p.Name,
+                    ToCamelCase(p.Name),
                     p.Type.Optional ? "?" : "",
                     p.Type.FullyQualifiedTsTypeName);
             }
+        }
+
+        static string ToCamelCase(string str)
+        {
+            return char.ToLower(str[0]) + str.Substring(1);
         }
     }
 }

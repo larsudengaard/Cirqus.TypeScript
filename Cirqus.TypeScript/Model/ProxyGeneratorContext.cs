@@ -217,13 +217,6 @@ namespace Cirqus.TypeScript.Model
             return builder.ToString();
         }
 
-        static string ToCamelCase(TypeDef commandType)
-        {
-            var name = commandType.Name.Name;
-
-            return char.ToLower(name[0]) + name.Substring(1);
-        }
-
         public string GetDefinitions(params TypeType[] typeTypes)
         {
             var builder = new StringBuilder();
