@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Cirqus.TypeScript.Model
@@ -105,9 +106,26 @@ namespace Cirqus.TypeScript.Model
                     p.Type.FullyQualifiedTsTypeName));
         }
 
-        protected static string ToCamelCase(string str)
+        public static string ToCamelCase(string s)
         {
-            return char.ToLower(str[0]) + str.Substring(1);
+            if (string.IsNullOrEmpty(s))
+                return s;
+
+            if (!char.IsUpper(s[0]))
+                return s;
+
+            var chars = s.ToCharArray();
+
+            for (var i = 0; i < chars.Length; i++)
+            {
+                var hasNext = (i + 1 < chars.Length);
+                if (i > 0 && hasNext && !char.IsUpper(chars[i + 1]))
+                    break;
+
+                chars[i] = char.ToLower(chars[i], CultureInfo.InvariantCulture);
+            }
+
+            return new string(chars);
         }
 
         protected static string EndOfStatement(string x)
