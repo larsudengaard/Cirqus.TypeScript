@@ -81,19 +81,7 @@ namespace Cirqus.TypeScript.Model
         {
             TypeDef typeDef = null;
             
-            var underlyingType = Nullable.GetUnderlyingType(type);
-            if (underlyingType != null)
-            {
-                var underlyingTypeDef = GetOrCreateTypeDef(new QualifiedClassName(underlyingType), underlyingType);
-                
-                var builtInTypeDef = underlyingTypeDef as BuiltInTypeDef;
-                typeDef = builtInTypeDef != null
-                    ? new BuiltInTypeDef(builtInTypeDef)
-                    : new TypeDef(underlyingTypeDef);
-
-                typeDef.Optional = true;
-            }
-            else if (typeof (IDictionary).IsAssignableFrom(type))
+            if (typeof (IDictionary).IsAssignableFrom(type))
             {
                 var dictionaryType = GetClosedGenericInterfaceFromImplementation(type, typeof (IDictionary<,>));
                 if (dictionaryType == null)
@@ -149,11 +137,14 @@ namespace Cirqus.TypeScript.Model
 
         TypeDef GetExistingTypeDefOrNull(Type type)
         {
+            type = Nullable.GetUnderlyingType(type) ?? type;
             return _types.ContainsKey(type) ? _types[type] : null;
         }
 
         TypeDef CreateTypeDef(QualifiedClassName qualifiedClassName, Type type)
         {
+            type = Nullable.GetUnderlyingType(type) ?? type;
+
             var builtInTypeUsageConfigurations = _configuration
                 .BuiltInTypeUsages
                 .Where(x => x.IsForType(type))
