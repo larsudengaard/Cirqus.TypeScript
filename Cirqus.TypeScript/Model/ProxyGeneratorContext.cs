@@ -79,9 +79,21 @@ namespace Cirqus.TypeScript.Model
 
         TypeDef CreateSpecialTypeDefOrNull(Type type)
         {
-            BuiltInTypeDef typeDef = null;
+            TypeDef typeDef = null;
+            
+            var underlyingType = Nullable.GetUnderlyingType(type);
+            if (underlyingType != null)
+            {
+                var underlyingTypeDef = GetOrCreateTypeDef(new QualifiedClassName(underlyingType), underlyingType);
+                
+                var builtInTypeDef = underlyingTypeDef as BuiltInTypeDef;
+                typeDef = builtInTypeDef != null
+                    ? new BuiltInTypeDef(builtInTypeDef)
+                    : new TypeDef(underlyingTypeDef);
 
-            if (typeof (IDictionary).IsAssignableFrom(type))
+                typeDef.Optional = true;
+            }
+            else if (typeof (IDictionary).IsAssignableFrom(type))
             {
                 var dictionaryType = GetClosedGenericInterfaceFromImplementation(type, typeof (IDictionary<,>));
                 if (dictionaryType == null)
@@ -170,8 +182,8 @@ namespace Cirqus.TypeScript.Model
             var typeDef = IsCommand(type)
                 ? new CommandTypeDef(qualifiedClassName, GetTypeFor(typeof (Command)), type)
                 : IsView(type)
-                    ? new TypeDef(qualifiedClassName, TypeType.View)
-                    : new TypeDef(qualifiedClassName, TypeType.Other);
+                    ? new TypeDef(qualifiedClassName, TypeType.View, type)
+                    : new TypeDef(qualifiedClassName, TypeType.Other, type);
 
             _types[type] = typeDef;
 
