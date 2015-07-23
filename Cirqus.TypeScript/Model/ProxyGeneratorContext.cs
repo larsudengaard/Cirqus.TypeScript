@@ -43,7 +43,7 @@ namespace Cirqus.TypeScript.Model
 
             foreach (var type in types)
             {
-                AddTypeDefFor(type);
+                GetOrCreateTypeDef(type);
             }
         }
 
@@ -52,18 +52,13 @@ namespace Cirqus.TypeScript.Model
             _types.Add(builtInTypeDef.Type, builtInTypeDef);
         }
 
-        public void AddTypeDefFor(Type type)
+        TypeDef GetOrCreateTypeDef(Type type)
         {
-            var qualifiedClassName = new QualifiedClassName(type);
+            type = Nullable.GetUnderlyingType(type) ?? type;
 
-            GetOrCreateTypeDef(qualifiedClassName, type);
-        }
-
-        TypeDef GetOrCreateTypeDef(QualifiedClassName qualifiedClassName, Type type)
-        {
             return GetExistingTypeDefOrNull(type)
                    ?? CreateSpecialTypeDefOrNull(type)
-                   ?? CreateTypeDef(qualifiedClassName, type);
+                   ?? CreateTypeDef(new QualifiedClassName(type), type);
         }
 
         public static Type GetClosedGenericInterfaceFromImplementation(Type implementation, Type openGenericInterface)
@@ -89,8 +84,8 @@ namespace Cirqus.TypeScript.Model
 
                 var keyType = dictionaryType.GetGenericArguments()[0];
                 var valueType = dictionaryType.GetGenericArguments()[1];
-                var keyDef = GetOrCreateTypeDef(new QualifiedClassName(keyType), keyType);
-                var valueDef = GetOrCreateTypeDef(new QualifiedClassName(valueType), valueType);
+                var keyDef = GetOrCreateTypeDef(keyType);
+                var valueDef = GetOrCreateTypeDef(valueType);
 
                 if (keyDef.FullyQualifiedTsTypeName != "string")
                 {
@@ -109,7 +104,7 @@ namespace Cirqus.TypeScript.Model
                 {
                     var elementType = type.GetElementType();
 
-                    var typeDefOfContainedType = GetOrCreateTypeDef(new QualifiedClassName(elementType), elementType);
+                    var typeDefOfContainedType = GetOrCreateTypeDef(elementType);
 
                     typeDef = new BuiltInTypeDef(type, "", string.Format("{0}[]", typeDefOfContainedType.FullyQualifiedTsTypeName));
                 }
@@ -121,7 +116,7 @@ namespace Cirqus.TypeScript.Model
                 {
                     var elementType = type.GetGenericArguments()[0];
 
-                    var typeDefOfContainedType = GetOrCreateTypeDef(new QualifiedClassName(elementType), elementType);
+                    var typeDefOfContainedType = GetOrCreateTypeDef(elementType);
 
                     typeDef = new BuiltInTypeDef(type, "", string.Format("{0}[]", typeDefOfContainedType.FullyQualifiedTsTypeName));
                 }
@@ -186,7 +181,7 @@ namespace Cirqus.TypeScript.Model
             {
                 var propertyDef =
                     new PropertyDef(
-                        GetOrCreateTypeDef(new QualifiedClassName(property.PropertyType), property.PropertyType),
+                        GetOrCreateTypeDef(property.PropertyType),
                         property.Name);
 
                 if (typeDef.TypeType == TypeType.Command && propertyDef.Name == "Meta") continue;
