@@ -74,8 +74,8 @@ namespace Cirqus.TypeScript.Model
 
         TypeDef CreateSpecialTypeDefOrNull(Type type)
         {
-            BuiltInTypeDef typeDef = null;
-
+            TypeDef typeDef = null;
+            
             if (typeof (IDictionary).IsAssignableFrom(type))
             {
                 var dictionaryType = GetClosedGenericInterfaceFromImplementation(type, typeof (IDictionary<,>));
@@ -165,8 +165,8 @@ namespace Cirqus.TypeScript.Model
             var typeDef = IsCommand(type)
                 ? new CommandTypeDef(qualifiedClassName, GetTypeFor(typeof (Command)), type)
                 : IsView(type)
-                    ? new TypeDef(qualifiedClassName, TypeType.View)
-                    : new TypeDef(qualifiedClassName, TypeType.Other);
+                    ? new TypeDef(qualifiedClassName, CirqusType.View)
+                    : new TypeDef(qualifiedClassName, CirqusType.Other);
 
             _types[type] = typeDef;
 
@@ -184,7 +184,7 @@ namespace Cirqus.TypeScript.Model
                         GetOrCreateTypeDef(property.PropertyType),
                         property.Name);
 
-                if (typeDef.TypeType == TypeType.Command && propertyDef.Name == "Meta") continue;
+                if (typeDef.CirqusType == CirqusType.Command && propertyDef.Name == "Meta") continue;
 
                 typeDef.AddProperty(propertyDef);
             }
@@ -212,13 +212,13 @@ namespace Cirqus.TypeScript.Model
             return builder.ToString();
         }
 
-        public string GetDefinitions(params TypeType[] typeTypes)
+        public string GetDefinitions(params CirqusType[] cirqusType)
         {
             var builder = new StringBuilder();
 
             var typeGroups = _types.Values
-                .Where(x => typeTypes.Contains(x.TypeType))
-                .GroupBy(t => t.TypeType)
+                .Where(x => cirqusType.Contains(x.CirqusType))
+                .GroupBy(t => t.CirqusType)
                 .OrderBy(g => g.Key)
                 .ToList();
 
@@ -241,24 +241,24 @@ namespace Cirqus.TypeScript.Model
             return builder.ToString();
         }
 
-        string FormatTypeType(TypeType typeType)
+        string FormatTypeType(CirqusType cirqusType)
         {
-            switch (typeType)
+            switch (cirqusType)
             {
-                case TypeType.Command:
+                case CirqusType.Command:
                     return "Domain commands";
 
-                case TypeType.View:
+                case CirqusType.View:
                     return "Domain views";
 
-                case TypeType.Other:
+                case CirqusType.Other:
                     return "Domain primitives";
 
-                case TypeType.Primitive:
+                case CirqusType.Primitive:
                     return "Built-in primitives";
 
                 default:
-                    return typeType.ToString();
+                    return cirqusType.ToString();
             }
         }
 

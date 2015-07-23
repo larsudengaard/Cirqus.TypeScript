@@ -1,6 +1,6 @@
 ﻿namespace Cirqus.TypeScript.Model
 {
-    enum TypeType
+    enum CirqusType
     {
         Command = 0,
         View = 1,

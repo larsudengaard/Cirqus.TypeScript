@@ -12,18 +12,16 @@ namespace Cirqus.TypeScript.Model
         protected readonly List<PropertyDef> _properties = new List<PropertyDef>();
         protected readonly TypeDef _baseType;
 
-        public TypeDef(QualifiedClassName name, TypeType typeType)
-            : this(name, typeType, null, null)
+        public TypeDef(QualifiedClassName name, CirqusType cirqusType)
+            : this(name, cirqusType, null, null)
         {
-            Name = name;
-            TypeType = typeType;
         }
 
-        public TypeDef(QualifiedClassName name, TypeType typeType, TypeDef baseType, Type type)
+        public TypeDef(QualifiedClassName name, CirqusType cirqusType, TypeDef baseType, Type type)
         {
             _baseType = baseType;
             Name = name;
-            TypeType = typeType;
+            CirqusType = cirqusType;
             Type = type;
         }
 
@@ -49,7 +47,7 @@ namespace Cirqus.TypeScript.Model
             get { return string.Format("{0}.{1}", Name.Ns, Name.Name); }
         }
 
-        public TypeType TypeType
+        public CirqusType CirqusType
         {
             get;
             private set;

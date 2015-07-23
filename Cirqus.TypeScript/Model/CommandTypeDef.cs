@@ -7,8 +7,7 @@ namespace Cirqus.TypeScript.Model
 {
     class CommandTypeDef : TypeDef
     {
-        public CommandTypeDef(QualifiedClassName name) : base(name, TypeType.Command) { }
-        public CommandTypeDef(QualifiedClassName name, TypeDef baseType, Type type) : base(name, TypeType.Command, baseType, type) {}
+        public CommandTypeDef(QualifiedClassName name, TypeDef baseType, Type type) : base(name, CirqusType.Command, baseType, type) {}
 
         public override string GetCode(ProxyGeneratorContext context)
         {
