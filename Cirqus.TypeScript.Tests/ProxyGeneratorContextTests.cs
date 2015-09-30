@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Cirqus.TypeScript.Config;
 using Cirqus.TypeScript.Model;
 using Xunit;
@@ -103,6 +104,26 @@ export module Cirqus.TypeScript.Tests {
 }
 ", context.GetDefinitions(CirqusType.Other));
         }
+
+        [Fact]
+        public void CanAliasNamespaces()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(SomeClass) }, new Configuration()
+            {
+                NamespaceAliases =
+                {
+                    Tuple.Create("Cirqus.TypeScript", "HAT")
+                }
+            });
+
+            Assert.Contains(
+@"export module HAT.Tests {
+    export class SomeClass {
+        
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+        }
     }
 
     public class GenericClass<T> { }
@@ -121,5 +142,10 @@ export module Cirqus.TypeScript.Tests {
     public class FatherOfGenericClass
     {
         public GenericClass<int> Type { get; set; }
+    }
+
+    public class SomeClass
+    {
+        
     }
 }

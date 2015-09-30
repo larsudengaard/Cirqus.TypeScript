@@ -150,6 +150,14 @@ namespace Cirqus.TypeScript.Model
                          ? "." + type.DeclaringType.Name
                          : "");
 
+            foreach (var alias in _configuration.NamespaceAliases)
+            {
+                if (ns.StartsWith(alias.Item1))
+                {
+                    ns = alias.Item2 + ns.Remove(0, alias.Item1.Length);
+                }
+            }
+
             string name;
             if (type.IsGenericTypeDefinition)
             {
@@ -273,9 +281,13 @@ namespace Cirqus.TypeScript.Model
                 .OrderBy(g => g.Key)
                 .ToList();
 
+            builder.AppendLine("namespace Api");
+            builder.AppendLine("{");
+            builder.AppendLine();
+
             foreach (var typeGroup in typeGroups)
             {
-                builder.AppendLine(string.Format(@"/* {0} */", FormatTypeType(typeGroup.Key)));
+                builder.AppendLine($@"/* {FormatTypeType(typeGroup.Key)} */");
 
                 foreach (var type in typeGroup)
                 {
@@ -283,11 +295,14 @@ namespace Cirqus.TypeScript.Model
                     if (string.IsNullOrWhiteSpace(code)) continue;
 
                     builder.AppendLine(code);
+
                     builder.AppendLine();
                 }
 
                 builder.AppendLine();
             }
+
+            builder.AppendLine("}");
 
             return builder.ToString();
         }

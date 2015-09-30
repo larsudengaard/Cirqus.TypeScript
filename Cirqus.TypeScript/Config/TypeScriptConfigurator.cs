@@ -29,27 +29,25 @@ namespace Cirqus.TypeScript.Config
             _configuration.BuiltInTypeUsages.Add(new Configuration.BuiltInTypeUsageConfiguration(predicate, tsType));
         }
 
+        public void AliasNamespace(string @namespace, string alias)
+        {
+            _configuration.NamespaceAliases.Add(Tuple.Create(@namespace, alias));
+        }
+
         static PropertyInfo GetPropertyInfo<TSource, TProperty>(Expression<Func<TSource, TProperty>> propertyExpression)
         {
             Type type = typeof (TSource);
 
             var member = propertyExpression.Body as MemberExpression;
             if (member == null)
-                throw new ArgumentException(string.Format(
-                    "Expression '{0}' refers to a method, not a property.",
-                    propertyExpression));
+                throw new ArgumentException($"Expression '{propertyExpression}' refers to a method, not a property.");
 
             var propInfo = member.Member as PropertyInfo;
             if (propInfo == null)
-                throw new ArgumentException(string.Format(
-                    "Expression '{0}' refers to a field, not a property.",
-                    propertyExpression));
+                throw new ArgumentException($"Expression '{propertyExpression}' refers to a field, not a property.");
 
             if (type != propInfo.ReflectedType && !type.IsSubclassOf(propInfo.ReflectedType))
-                throw new ArgumentException(string.Format(
-                    "Expresion '{0}' refers to a property that is not from type {1}.",
-                    propertyExpression,
-                    type));
+                throw new ArgumentException($"Expression '{propertyExpression}' refers to a property that is not from type {type}.");
 
             return propInfo;
         }

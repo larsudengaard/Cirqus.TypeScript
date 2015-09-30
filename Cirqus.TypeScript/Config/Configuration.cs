@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Cirqus.TypeScript.Config
@@ -7,11 +8,13 @@ namespace Cirqus.TypeScript.Config
     {
         public List<IgnoredPropertyConfiguration> IgnoredProperties { get; private set; }
         public List<BuiltInTypeUsageConfiguration> BuiltInTypeUsages { get; private set; }
+        public List<Tuple<string, string>>  NamespaceAliases { get; private set; }
 
         internal Configuration()
         {
             IgnoredProperties = new List<IgnoredPropertyConfiguration>();
             BuiltInTypeUsages = new List<BuiltInTypeUsageConfiguration>();
+            NamespaceAliases = new List<Tuple<string, string>>();
         }
 
         public class BuiltInTypeUsageConfiguration
