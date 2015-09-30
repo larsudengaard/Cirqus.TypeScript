@@ -1,2 +1,2 @@
 @echo off
-%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe build.proj /t:%1 /p:Version=%2
+"%PROGRAMFILES(x86)%\MSBuild\14.0\Bin\MsBuild.exe" build.proj /t:%1 /p:Version=%2
