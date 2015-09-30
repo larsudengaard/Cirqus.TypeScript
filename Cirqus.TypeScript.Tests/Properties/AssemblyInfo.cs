@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Cirqus.TypeScript")]
+[assembly: AssemblyTitle("Cirqus.TypeScript.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Cirqus.TypeScript")]
+[assembly: AssemblyProduct("Cirqus.TypeScript.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("570e27ed-467e-4f75-89da-b308fa17f0f1")]
+[assembly: Guid("84013ce1-d923-48ed-9dae-e2e5dbe75adc")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -34,4 +34,3 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("0.2")]
 [assembly: AssemblyVersion("0.2")]
 [assembly: AssemblyFileVersion("0.2.9")]
-[assembly: InternalsVisibleTo("Cirqus.TypeScript.Tests")]

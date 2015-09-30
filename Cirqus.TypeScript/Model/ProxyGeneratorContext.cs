@@ -1,45 +1,47 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Cirqus.TypeScript.Config;
 using d60.Cirqus.Commands;
 using d60.Cirqus.Numbers;
 using d60.Cirqus.Views.ViewManagers;
 
 namespace Cirqus.TypeScript.Model
 {
-    class ProxyGeneratorContext
+    internal class ProxyGeneratorContext
     {
-        readonly Configuration.Configuration _configuration;
+        readonly Configuration _configuration;
         readonly Dictionary<Type, TypeDef> _types = new Dictionary<Type, TypeDef>();
         bool _generateDictionaryDefinition;
 
-        public ProxyGeneratorContext(IEnumerable<Type> types, Configuration.Configuration configuration)
+        public ProxyGeneratorContext(IEnumerable<Type> types, Configuration configuration)
         {
             _configuration = configuration;
 
-            AddBuiltInType(new BuiltInTypeDef(typeof(bool), "", "boolean"));
+            AddBuiltInType(typeof(bool), "", "boolean");
 
-            AddBuiltInType(new BuiltInTypeDef(typeof(short), "", "number"));
-            AddBuiltInType(new BuiltInTypeDef(typeof(int), "", "number"));
-            AddBuiltInType(new BuiltInTypeDef(typeof(long), "", "number"));
+            AddBuiltInType(typeof(short), "", "number");
+            AddBuiltInType(typeof(int), "", "number");
+            AddBuiltInType(typeof(long), "", "number");
 
-            AddBuiltInType(new BuiltInTypeDef(typeof(float), "", "number"));
-            AddBuiltInType(new BuiltInTypeDef(typeof(double), "", "number"));
-            AddBuiltInType(new BuiltInTypeDef(typeof(decimal), "", "number"));
+            AddBuiltInType(typeof(float), "", "number");
+            AddBuiltInType(typeof(double), "", "number");
+            AddBuiltInType(typeof(decimal), "", "number");
 
-            AddBuiltInType(new BuiltInTypeDef(typeof(string), "", "string"));
-            AddBuiltInType(new BuiltInTypeDef(typeof(DateTime), "", "Date"));
+            AddBuiltInType(typeof(string), "", "string");
+            AddBuiltInType(typeof(DateTime), "", "Date");
 
-            AddBuiltInType(new BuiltInTypeDef(typeof(object), "", "any"));
+            AddBuiltInType(typeof(object), "", "any");
 
-            AddBuiltInType(new BuiltInTypeDef(typeof(Command), @"export interface Command {
+            AddBuiltInType(typeof(Command), @"export interface Command {
     Meta?: any;
-}", "Command"));
-            AddBuiltInType(new BuiltInTypeDef(typeof(Metadata), "", "any") { Optional = true });
-            AddBuiltInType(new BuiltInTypeDef(typeof(Guid), "export interface Guid {}", "Guid"));
+}", "Command");
+            AddBuiltInType(typeof(Metadata), "", "any");
+            AddBuiltInType(typeof(Guid), "export interface Guid {}", "Guid");
 
             foreach (var type in types)
             {
@@ -47,9 +49,13 @@ namespace Cirqus.TypeScript.Model
             }
         }
 
-        void AddBuiltInType(BuiltInTypeDef builtInTypeDef)
+        BuiltInTypeDef AddBuiltInType(Type type, string code, string fullyQualifiedTsTypeName)
         {
-            _types.Add(builtInTypeDef.Type, builtInTypeDef);
+            var name = GetQualifiedClassName(type);
+            var typeDef = new BuiltInTypeDef(name, type, code, fullyQualifiedTsTypeName);
+            _types.Add(type, typeDef);
+
+            return typeDef;
         }
 
         TypeDef GetOrCreateTypeDef(Type type)
@@ -58,7 +64,7 @@ namespace Cirqus.TypeScript.Model
 
             return GetExistingTypeDefOrNull(type)
                    ?? CreateSpecialTypeDefOrNull(type)
-                   ?? CreateTypeDef(new QualifiedClassName(type), type);
+                   ?? CreateTypeDef(type);
         }
 
         public static Type GetClosedGenericInterfaceFromImplementation(Type implementation, Type openGenericInterface)
@@ -96,7 +102,7 @@ namespace Cirqus.TypeScript.Model
                 }
 
                 _generateDictionaryDefinition = true;
-                typeDef = new BuiltInTypeDef(type, "", string.Format("Dictionary<{0}>", valueDef.FullyQualifiedTsTypeName));
+                typeDef = AddBuiltInType(type, "", string.Format("Dictionary<{0}>", valueDef.FullyQualifiedTsTypeName));
             }
             else if (typeof(IEnumerable).IsAssignableFrom(type))
             {
@@ -106,25 +112,27 @@ namespace Cirqus.TypeScript.Model
 
                     var typeDefOfContainedType = GetOrCreateTypeDef(elementType);
 
-                    typeDef = new BuiltInTypeDef(type, "", string.Format("{0}[]", typeDefOfContainedType.FullyQualifiedTsTypeName));
+                    typeDef = AddBuiltInType(type, "", string.Format("{0}[]", typeDefOfContainedType.FullyQualifiedTsTypeName));
                 }
                 else if (!type.IsGenericType)
                 {
-                    typeDef = new BuiltInTypeDef(type, "", "any[]");
+                    typeDef = AddBuiltInType(type, "", "any[]");
                 }
                 else if (type.IsGenericType && type.GetGenericArguments().Length == 1)
                 {
                     var elementType = type.GetGenericArguments()[0];
 
-                    var typeDefOfContainedType = GetOrCreateTypeDef(elementType);
+                    if (!elementType.IsGenericParameter)
+                    {
+                        var typeDefOfContainedType = GetOrCreateTypeDef(elementType);
+                        typeDef = AddBuiltInType(type, "", string.Format("{0}[]", typeDefOfContainedType.FullyQualifiedTsTypeName));
+                    }
+                    else
+                    {
+                        typeDef = AddBuiltInType(type, "", string.Format("{0}[]", elementType.Name));
+                    }
 
-                    typeDef = new BuiltInTypeDef(type, "", string.Format("{0}[]", typeDefOfContainedType.FullyQualifiedTsTypeName));
                 }
-            }
-
-            if (typeDef != null)
-            {
-                _types.Add(type, typeDef);
             }
 
             return typeDef;
@@ -135,8 +143,48 @@ namespace Cirqus.TypeScript.Model
             return _types.ContainsKey(type) ? _types[type] : null;
         }
 
-        TypeDef CreateTypeDef(QualifiedClassName qualifiedClassName, Type type)
+        QualifiedClassName GetQualifiedClassName(Type type)
         {
+            var ns = type.Namespace +
+                     (type.IsNested
+                         ? "." + type.DeclaringType.Name
+                         : "");
+
+            string name;
+            if (type.IsGenericTypeDefinition)
+            {
+                name = $"{type.Name.Split('`')[0]}<{string.Join(", ", type.GetGenericArguments().Select(x => x.Name))}>";
+            }
+            else if (type.IsGenericType)
+            {
+                name = string.Format("{0}<{1}>",
+                    type.Name.Split('`')[0],
+                    string.Join(", ", type.GetGenericArguments().Select(x =>
+                    {
+                        // if it's the "T" from a open parent generic class
+                        if (x.IsGenericParameter)
+                            return x.Name;
+
+                        var arg = GetOrCreateTypeDef(x);
+
+                        return arg.FullyQualifiedTsTypeName;
+                    })));
+
+                // make the open generic type too
+                GetOrCreateTypeDef(type.GetGenericTypeDefinition());
+            }
+            else
+            {
+                name = type.Name;
+            }
+
+            return new QualifiedClassName(ns, name);
+        }
+
+        TypeDef CreateTypeDef(Type type)
+        {
+            var qualifiedClassName = GetQualifiedClassName(type);
+
             var builtInTypeUsageConfigurations = _configuration
                 .BuiltInTypeUsages
                 .Where(x => x.IsForType(type))
@@ -157,9 +205,7 @@ namespace Cirqus.TypeScript.Model
                 if (existingTypes.Any())
                     return existingTypes.First();
 
-                var builtInTypeDef = new BuiltInTypeDef(type, "", builtInTypeUsageConfiguration.TsType);
-                AddBuiltInType(builtInTypeDef);
-                return builtInTypeDef;
+                return AddBuiltInType(type, "", builtInTypeUsageConfiguration.TsType);
             }
 
             var typeDef = IsCommand(type)
@@ -167,6 +213,11 @@ namespace Cirqus.TypeScript.Model
                 : IsView(type)
                     ? new TypeDef(qualifiedClassName, CirqusType.View)
                     : new TypeDef(qualifiedClassName, CirqusType.Other);
+
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            {
+                typeDef.NoEmit = true;
+            }
 
             _types[type] = typeDef;
 
@@ -217,7 +268,7 @@ namespace Cirqus.TypeScript.Model
             var builder = new StringBuilder();
 
             var typeGroups = _types.Values
-                .Where(x => cirqusType.Contains(x.CirqusType))
+                .Where(x => cirqusType.Contains(x.CirqusType) && !x.NoEmit)
                 .GroupBy(t => t.CirqusType)
                 .OrderBy(g => g.Key)
                 .ToList();

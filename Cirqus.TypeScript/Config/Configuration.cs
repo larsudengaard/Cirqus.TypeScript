@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Cirqus.TypeScript.Configuration
+namespace Cirqus.TypeScript.Config
 {
     public class Configuration
     {

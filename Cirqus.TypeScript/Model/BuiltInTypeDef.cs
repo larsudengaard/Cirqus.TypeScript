@@ -7,13 +7,8 @@ namespace Cirqus.TypeScript.Model
         readonly string _code;
         readonly string _fullyQualifiedTsTypeName;
 
-        public BuiltInTypeDef(BuiltInTypeDef source)
-            : this(source.Type, source._code, source._fullyQualifiedTsTypeName)
-        {
-        }
-
-        public BuiltInTypeDef(Type type, string code, string fullyQualifiedTsTypeName) 
-            : base(new QualifiedClassName(type), CirqusType.Primitive, null, type)
+        public BuiltInTypeDef(QualifiedClassName name, Type type, string code, string fullyQualifiedTsTypeName) 
+            : base(name, CirqusType.Primitive, null, type)
         {
             _code = code;
             _fullyQualifiedTsTypeName = fullyQualifiedTsTypeName;

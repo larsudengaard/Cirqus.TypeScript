@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Cirqus.TypeScript.Configuration;
+using Cirqus.TypeScript.Config;
 using Cirqus.TypeScript.Model;
 
 namespace Cirqus.TypeScript.Generation
@@ -33,7 +33,7 @@ namespace Cirqus.TypeScript.Generation
                 throw new PrettyException("Found multiple configurations in command assembly, only one is supported.");
             }
 
-            var configuration = new Configuration.Configuration();
+            var configuration = new Configuration();
             if (configurators.Count == 1)
             {
                 var configuratorType = configurators.Single();

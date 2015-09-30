@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Cirqus.TypeScript.Configuration
+namespace Cirqus.TypeScript.Config
 {
     public abstract class TypeScriptConfigurator
     {

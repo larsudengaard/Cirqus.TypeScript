@@ -1,17 +1,14 @@
 using System;
+using System.Linq;
 
 namespace Cirqus.TypeScript.Model
 {
     class QualifiedClassName : IEquatable<QualifiedClassName>
     {
-        public QualifiedClassName(Type type)
+        public QualifiedClassName(string ns, string name)
         {
-            Ns = type.Namespace +
-                 (type.IsNested
-                     ? "." + type.DeclaringType.Name
-                     : "");
-
-            Name = type.Name;
+            Ns = ns;
+            Name = name;
         }
 
         public bool Equals(QualifiedClassName other)

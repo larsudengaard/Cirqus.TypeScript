@@ -59,8 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\Configuration.cs" />
-    <Compile Include="Configuration\TypeScriptConfigurator.cs" />
+    <Compile Include="Config\Configuration.cs" />
+    <Compile Include="Config\TypeScriptConfigurator.cs" />
     <Compile Include="Generation\ProxyGenerationResult.cs" />
     <Compile Include="Generation\ProxyGenerator.cs" />
     <Compile Include="Model\BuiltInTypeDef.cs" />

@@ -26,6 +26,7 @@ namespace Cirqus.TypeScript.Model
         }
 
         public QualifiedClassName Name { get; private set; }
+        public bool NoEmit { get; set; }
 
         public IEnumerable<PropertyDef> Properties
         {
@@ -53,7 +54,6 @@ namespace Cirqus.TypeScript.Model
             private set;
         }
 
-        public bool Optional { get; set; }
         public Type Type { get; protected set; }
 
         public string AssemblyQualifiedName
@@ -98,9 +98,8 @@ namespace Cirqus.TypeScript.Model
         protected virtual IEnumerable<string> GetTypedProperties()
         {
             return Properties.Select(p =>
-                string.Format("{0}{1}: {2}",
+                string.Format("{0}: {1}",
                     ToCamelCase(p.Name),
-                    p.Type.Optional ? "?" : "",
                     p.Type.FullyQualifiedTsTypeName));
         }
 
