@@ -45,7 +45,7 @@ namespace Cirqus.TypeScript.Model
 
         public virtual string FullyQualifiedTsTypeName
         {
-            get { return string.Format("{0}.{1}", Name.Ns, Name.Name); }
+            get { return $"{(Name.Ns != null ? Name.Ns + "." : "")}{Name.Name}"; }
         }
 
         public CirqusType CirqusType

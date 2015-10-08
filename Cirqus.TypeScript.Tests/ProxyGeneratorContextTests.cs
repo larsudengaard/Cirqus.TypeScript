@@ -124,6 +124,23 @@ export module Cirqus.TypeScript.Tests {
 }
 ", context.GetDefinitions(CirqusType.Other));
         }
+
+        [Fact]
+        public void EmitOpenGenericTypesWithTypeArgumentProperty()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(GenericClassWithTypeArgumentProperty<>) }, new Configuration());
+
+            Assert.Contains(
+@"
+export module Cirqus.TypeScript.Tests {
+    export class GenericClassWithTypeArgumentProperty<T> {
+        item: T;
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+
+            Assert.DoesNotContain(@"export class T", context.GetDefinitions(CirqusType.Other));
+        }
     }
 
     public class GenericClass<T> { }
@@ -132,6 +149,11 @@ export module Cirqus.TypeScript.Tests {
     public class MotherOfGenericClass<T>
     {
         public GenericClass<T> Type { get; set; }
+    }
+
+    public class GenericClassWithTypeArgumentProperty<T>
+    {
+        public T Item { get; set; }
     }
 
     public class MotherOfEnumerableOf<T>
