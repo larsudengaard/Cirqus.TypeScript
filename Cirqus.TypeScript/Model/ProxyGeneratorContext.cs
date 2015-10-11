@@ -134,6 +134,12 @@ namespace Cirqus.TypeScript.Model
 
                 }
             }
+            else if (type.IsEnum)
+            {
+                var enumTypeDef = new EnumDef(GetQualifiedClassName(type), CirqusType.Other, type);
+                _types[type] = enumTypeDef;
+                return enumTypeDef;
+            }
 
             return typeDef;
         }

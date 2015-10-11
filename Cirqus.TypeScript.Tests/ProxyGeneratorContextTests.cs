@@ -128,10 +128,11 @@ export module Cirqus.TypeScript.Tests {
         [Fact]
         public void EmitOpenGenericTypesWithTypeArgumentProperty()
         {
-            var context = new ProxyGeneratorContext(new[] { typeof(GenericClassWithTypeArgumentProperty<>) }, new Configuration());
+            var context = new ProxyGeneratorContext(new[] {typeof (GenericClassWithTypeArgumentProperty<>)},
+                new Configuration());
 
             Assert.Contains(
-@"
+                @"
 export module Cirqus.TypeScript.Tests {
     export class GenericClassWithTypeArgumentProperty<T> {
         item: T;
@@ -141,6 +142,87 @@ export module Cirqus.TypeScript.Tests {
 
             Assert.DoesNotContain(@"export class T", context.GetDefinitions(CirqusType.Other));
         }
+
+
+        [Fact]
+        public void EmitsEnum()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(Enum) }, new Configuration());
+
+            Assert.Contains(
+@"
+export module Cirqus.TypeScript.Tests {
+    export enum Enum {
+        None,
+        Value1,
+        Value2,
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+        }
+
+        [Fact]
+        public void EmitsEnumProperty()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(ClassWithEnum) }, new Configuration());
+
+            Assert.Contains(
+@"
+export module Cirqus.TypeScript.Tests {
+    export class ClassWithEnum {
+        enum: Cirqus.TypeScript.Tests.Enum;
+    }
+}
+
+export module Cirqus.TypeScript.Tests {
+    export enum Enum {
+        None,
+        Value1,
+        Value2,
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+        }
+
+        [Fact]
+        public void EmitsEnumFromNullableProperty()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(ClassWithEnum) }, new Configuration());
+
+            Assert.Contains(
+@"
+export module Cirqus.TypeScript.Tests {
+    export class ClassWithEnum {
+        enum: Cirqus.TypeScript.Tests.Enum;
+    }
+}
+
+export module Cirqus.TypeScript.Tests {
+    export enum Enum {
+        None,
+        Value1,
+        Value2,
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+        }
+    }
+
+    public class ClassWithEnum
+    {
+        public Enum Enum { get; set; }
+    }
+
+    public class ClassWithNullableEnum
+    {
+        public Enum? Enum { get; set; }
+    }
+
+    public enum Enum
+    {
+        None,
+        Value1,
+        Value2
     }
 
     public class GenericClass<T> { }
