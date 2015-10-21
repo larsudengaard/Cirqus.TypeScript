@@ -143,9 +143,25 @@ export module Cirqus.TypeScript.Tests {
             Assert.DoesNotContain(@"export class T", context.GetDefinitions(CirqusType.Other));
         }
 
+        [Fact]
+        public void EmitsEnumWithExplicitValues()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(EnumWithExplicitValues) }, new Configuration());
+
+            Assert.Contains(
+@"
+export module Cirqus.TypeScript.Tests {
+    export enum EnumWithExplicitValues {
+        None = 2,
+        Value1 = 4,
+        Value2 = 6
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+        }
 
         [Fact]
-        public void EmitsEnum()
+        public void EmitsEnumWithImplicitValues()
         {
             var context = new ProxyGeneratorContext(new[] { typeof(Enum) }, new Configuration());
 
@@ -153,9 +169,9 @@ export module Cirqus.TypeScript.Tests {
 @"
 export module Cirqus.TypeScript.Tests {
     export enum Enum {
-        None,
-        Value1,
-        Value2,
+        None = 0,
+        Value1 = 1,
+        Value2 = 2
     }
 }
 ", context.GetDefinitions(CirqusType.Other));
@@ -176,9 +192,9 @@ export module Cirqus.TypeScript.Tests {
 
 export module Cirqus.TypeScript.Tests {
     export enum Enum {
-        None,
-        Value1,
-        Value2,
+        None = 0,
+        Value1 = 1,
+        Value2 = 2
     }
 }
 ", context.GetDefinitions(CirqusType.Other));
@@ -199,9 +215,9 @@ export module Cirqus.TypeScript.Tests {
 
 export module Cirqus.TypeScript.Tests {
     export enum Enum {
-        None,
-        Value1,
-        Value2,
+        None = 0,
+        Value1 = 1,
+        Value2 = 2
     }
 }
 ", context.GetDefinitions(CirqusType.Other));
@@ -223,6 +239,13 @@ export module Cirqus.TypeScript.Tests {
         None,
         Value1,
         Value2
+    }
+
+    public enum EnumWithExplicitValues
+    {
+        None = 2,
+        Value1 = 4,
+        Value2 = 6
     }
 
     public class GenericClass<T> { }

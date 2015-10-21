@@ -1,14 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Cirqus.TypeScript.Model
 {
     class EnumDef : TypeDef
     {
-        //public EnumDef(QualifiedClassName name, CirqusType cirqusType) : base(name, cirqusType)
-        //{
-        //}
-
         public EnumDef(QualifiedClassName name, CirqusType cirqusType, Type type) : base(name, cirqusType, null, type)
         {
         }
@@ -17,6 +14,7 @@ namespace Cirqus.TypeScript.Model
         public override string GetCode(ProxyGeneratorContext context)
         {
             const string left = indent + indent;
+            var enums = Type.GetEnumValues().Cast<object>().Select(x => x + " = " + ((int)x).ToString());
 
             return string.Format(
 @"export module {0} {{
@@ -25,7 +23,7 @@ namespace Cirqus.TypeScript.Model
     }}
 }}",
    Name.Ns, Name.Name,
-   left + string.Join(Environment.NewLine + left, Type.GetEnumValues().Cast<object>().Select(x => x + ",")));
+   left + string.Join("," + Environment.NewLine + left, enums));
         }
     }
 }
