@@ -9,11 +9,11 @@ namespace Cirqus.TypeScript.Generation
     {
         static readonly Encoding Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
-        readonly string _code;
+        public string Code { get; }
 
         public ProxyGenerationResult(string code)
         {
-            _code = code;
+            Code = code;
         }
 
         public void WriteTo(string destinationFilePath)
@@ -31,14 +31,14 @@ namespace Cirqus.TypeScript.Generation
             output.Append(header);
             output.AppendLine("");
             output.AppendLine("");
-            output.AppendLine(_code);
+            output.AppendLine(Code);
 
             File.WriteAllText(destinationFilePath, output.ToString(), Encoding);
         }
 
         string GetHash()
         {
-            return Convert.ToBase64String(MD5.Create().ComputeHash(Encoding.GetBytes(_code)));
+            return Convert.ToBase64String(MD5.Create().ComputeHash(Encoding.GetBytes(Code)));
         }
 
         bool HasChanged(string destinationFilePath)
