@@ -29,6 +29,11 @@ namespace Cirqus.TypeScript.Config
             _configuration.BuiltInTypeUsages.Add(new Configuration.BuiltInTypeUsageConfiguration(predicate, tsType));
         }
 
+        public void Include<T>()
+        {
+            _configuration.AdditionalTypes.Add(typeof(T));
+        }
+
         public void AliasNamespace(string @namespace, string alias)
         {
             _configuration.NamespaceAliases.Add(Tuple.Create(@namespace, alias));

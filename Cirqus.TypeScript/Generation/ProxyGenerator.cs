@@ -10,24 +10,12 @@ namespace Cirqus.TypeScript.Generation
 {
     class ProxyGenerator
     {
-        readonly string _sourceDll;
-
-        public ProxyGenerator(string sourceDll)
+        public List<ProxyGenerationResult> Generate(string sourceDll)
         {
-            _sourceDll = sourceDll;
-        }
-
-        public List<ProxyGenerationResult> Generate()
-        {
-            return GetProxyGenerationResults().ToList();
-        }
-
-        IEnumerable<ProxyGenerationResult> GetProxyGenerationResults()
-        {
-            var assembly = LoadAssembly(_sourceDll);
+            var assembly = LoadAssembly(sourceDll);
             var allTypes = GetTypes(assembly);
 
-            var configurators = allTypes.Where(x => typeof (TypeScriptConfigurator).IsAssignableFrom(x)).ToList();
+            var configurators = allTypes.Where(x => typeof(TypeScriptConfigurator).IsAssignableFrom(x)).ToList();
             if (configurators.Count > 1)
             {
                 throw new PrettyException("Found multiple configurations in command assembly, only one is supported.");
@@ -37,17 +25,24 @@ namespace Cirqus.TypeScript.Generation
             if (configurators.Count == 1)
             {
                 var configuratorType = configurators.Single();
-                var configurator = (TypeScriptConfigurator) Activator.CreateInstance(configuratorType);
+                var configurator = (TypeScriptConfigurator)Activator.CreateInstance(configuratorType);
                 configuration = configurator.Configure();
             }
 
+            return GetProxyGenerationResults(allTypes, configuration).ToList();
+        }
+
+        public IEnumerable<ProxyGenerationResult> GetProxyGenerationResults(Type[] allTypes, Configuration configuration)
+        {
             var commandTypes = allTypes.Where(ProxyGeneratorContext.IsCommand).ToList();
             var viewTypes = allTypes.Where(ProxyGeneratorContext.IsView).ToList();
+            var additionalTypes = configuration.AdditionalTypes;
 
             Console.WriteLine("Found {0} command types", commandTypes.Count);
             Console.WriteLine("Found {0} view types", viewTypes.Count);
+            Console.WriteLine("Found {0} additional types", additionalTypes.Count);
 
-            var context = new ProxyGeneratorContext(commandTypes.Concat(viewTypes), configuration);
+            var context = new ProxyGeneratorContext(commandTypes.Concat(viewTypes).Concat(additionalTypes), configuration);
 
             var apiCode = context.GetDefinitions(CirqusType.Command, CirqusType.View, CirqusType.Other, CirqusType.Primitive);
             var systemCode = context.GetSystemDefinitions();

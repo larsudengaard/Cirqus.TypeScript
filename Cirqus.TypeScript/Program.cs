@@ -62,9 +62,9 @@ and <output-file> should be the directory in which you want the generated
                 Directory.CreateDirectory(destinationDirectory);
             }
 
-            var proxyGenerator = new ProxyGenerator(sourceDll);
+            var proxyGenerator = new ProxyGenerator();
             
-            var results = proxyGenerator.Generate().ToList();
+            var results = proxyGenerator.Generate(sourceDll).ToList();
 
             Console.WriteLine("Writing files");
             foreach (var result in results)

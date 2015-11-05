@@ -65,6 +65,7 @@
     <Compile Include="Generation\ProxyGenerator.cs" />
     <Compile Include="Model\BuiltInTypeDef.cs" />
     <Compile Include="Model\CommandTypeDef.cs" />
+    <Compile Include="Model\EnumDef.cs" />
     <Compile Include="Model\PropertyDef.cs" />
     <Compile Include="Model\ProxyGeneratorContext.cs" />
     <Compile Include="Model\QualifiedClassName.cs" />

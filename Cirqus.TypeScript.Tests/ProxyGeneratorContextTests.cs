@@ -124,6 +124,128 @@ export module Cirqus.TypeScript.Tests {
 }
 ", context.GetDefinitions(CirqusType.Other));
         }
+
+        [Fact]
+        public void EmitOpenGenericTypesWithTypeArgumentProperty()
+        {
+            var context = new ProxyGeneratorContext(new[] {typeof (GenericClassWithTypeArgumentProperty<>)},
+                new Configuration());
+
+            Assert.Contains(
+                @"
+export module Cirqus.TypeScript.Tests {
+    export class GenericClassWithTypeArgumentProperty<T> {
+        item: T;
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+
+            Assert.DoesNotContain(@"export class T", context.GetDefinitions(CirqusType.Other));
+        }
+
+        [Fact]
+        public void EmitsEnumWithExplicitValues()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(EnumWithExplicitValues) }, new Configuration());
+
+            Assert.Contains(
+@"
+export module Cirqus.TypeScript.Tests {
+    export enum EnumWithExplicitValues {
+        None = 2,
+        Value1 = 4,
+        Value2 = 6
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+        }
+
+        [Fact]
+        public void EmitsEnumWithImplicitValues()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(Enum) }, new Configuration());
+
+            Assert.Contains(
+@"
+export module Cirqus.TypeScript.Tests {
+    export enum Enum {
+        None = 0,
+        Value1 = 1,
+        Value2 = 2
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+        }
+
+        [Fact]
+        public void EmitsEnumProperty()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(ClassWithEnum) }, new Configuration());
+
+            Assert.Contains(
+@"
+export module Cirqus.TypeScript.Tests {
+    export class ClassWithEnum {
+        enum: Cirqus.TypeScript.Tests.Enum;
+    }
+}
+
+export module Cirqus.TypeScript.Tests {
+    export enum Enum {
+        None = 0,
+        Value1 = 1,
+        Value2 = 2
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+        }
+
+        [Fact]
+        public void EmitsEnumFromNullableProperty()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(ClassWithEnum) }, new Configuration());
+
+            Assert.Contains(
+@"
+export module Cirqus.TypeScript.Tests {
+    export class ClassWithEnum {
+        enum: Cirqus.TypeScript.Tests.Enum;
+    }
+}
+
+export module Cirqus.TypeScript.Tests {
+    export enum Enum {
+        None = 0,
+        Value1 = 1,
+        Value2 = 2
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
+        }
+    }
+
+    public class ClassWithEnum
+    {
+        public Enum Enum { get; set; }
+    }
+
+    public class ClassWithNullableEnum
+    {
+        public Enum? Enum { get; set; }
+    }
+
+    public enum Enum
+    {
+        None,
+        Value1,
+        Value2
+    }
+
+    public enum EnumWithExplicitValues
+    {
+        None = 2,
+        Value1 = 4,
+        Value2 = 6
     }
 
     public class GenericClass<T> { }
@@ -132,6 +254,11 @@ export module Cirqus.TypeScript.Tests {
     public class MotherOfGenericClass<T>
     {
         public GenericClass<T> Type { get; set; }
+    }
+
+    public class GenericClassWithTypeArgumentProperty<T>
+    {
+        public T Item { get; set; }
     }
 
     public class MotherOfEnumerableOf<T>

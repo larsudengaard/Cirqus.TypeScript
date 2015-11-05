@@ -134,6 +134,12 @@ namespace Cirqus.TypeScript.Model
 
                 }
             }
+            else if (type.IsEnum)
+            {
+                var enumTypeDef = new EnumDef(GetQualifiedClassName(type), CirqusType.Other, type);
+                _types[type] = enumTypeDef;
+                return enumTypeDef;
+            }
 
             return typeDef;
         }
@@ -181,6 +187,11 @@ namespace Cirqus.TypeScript.Model
                 // make the open generic type too
                 GetOrCreateTypeDef(type.GetGenericTypeDefinition());
             }
+            else if (type.IsGenericParameter)
+            {
+                name = type.Name;
+                ns = null;
+            }
             else
             {
                 name = type.Name;
@@ -222,7 +233,7 @@ namespace Cirqus.TypeScript.Model
                     ? new TypeDef(qualifiedClassName, CirqusType.View)
                     : new TypeDef(qualifiedClassName, CirqusType.Other);
 
-            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            if ((type.IsGenericType && !type.IsGenericTypeDefinition) || type.IsGenericParameter)
             {
                 typeDef.NoEmit = true;
             }
