@@ -80,6 +80,8 @@ namespace Cirqus.TypeScript.Model
 
         TypeDef CreateSpecialTypeDefOrNull(Type type)
         {
+            Console.WriteLine("Generating type {0}", type);
+
             TypeDef typeDef = null;
             
             if (typeof (IDictionary).IsAssignableFrom(type))
@@ -202,6 +204,8 @@ namespace Cirqus.TypeScript.Model
 
         TypeDef CreateTypeDef(Type type)
         {
+            Console.WriteLine("Generating type {0}", type);
+
             var qualifiedClassName = GetQualifiedClassName(type);
 
             var builtInTypeUsageConfigurations = _configuration
@@ -249,6 +253,8 @@ namespace Cirqus.TypeScript.Model
             var properties = GetAllProperties(type).Where(x => !ignoredProperties.Contains(x.Name));
             foreach (var property in properties)
             {
+                Console.WriteLine("Generating property {0}", property.Name);
+
                 var propertyDef =
                     new PropertyDef(
                         GetOrCreateTypeDef(property.PropertyType),
