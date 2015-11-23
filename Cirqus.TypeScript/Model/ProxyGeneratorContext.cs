@@ -103,9 +103,12 @@ namespace Cirqus.TypeScript.Model
                         keyDef.FullyQualifiedTsTypeName));
                 }
 
-                _generateDictionaryDefinition = true;
+                _generateDictionaryDefinition = false;
 
-                typeDef = new BuiltInTypeDef(new QualifiedClassName("", "Dictionary"), type, "", string.Format("Dictionary<{0}>", valueDef.FullyQualifiedTsTypeName));
+                typeDef = new BuiltInTypeDef(new QualifiedClassName("", "Dictionary"), type, "", string.Format("Dictionary<{0}>", valueDef.FullyQualifiedTsTypeName))
+                {
+                    NoEmit = true
+                };
                 _types.Add(type, typeDef);
             }
             else if (typeof(IEnumerable).IsAssignableFrom(type))
