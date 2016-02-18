@@ -47,8 +47,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="d60.Cirqus">
-      <HintPath>..\packages\d60.Cirqus.0.60.3\lib\NET45\d60.Cirqus.dll</HintPath>
+    <Reference Include="d60.Cirqus, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\d60.Cirqus.0.64.13\lib\NET45\d60.Cirqus.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

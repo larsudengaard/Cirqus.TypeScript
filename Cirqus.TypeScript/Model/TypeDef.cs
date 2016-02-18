@@ -80,7 +80,7 @@ namespace Cirqus.TypeScript.Model
 
             return string.Format(
 @"export module {0} {{
-    export class {1}{2} {{
+    export interface {1}{2} {{
 {3}
     }}
 }}", 

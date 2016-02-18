@@ -28,7 +28,7 @@ namespace Cirqus.TypeScript.Tests
 
             Assert.Contains(
 @"export module Cirqus.TypeScript.Tests.ProxyGeneratorTests {
-    export class CustomClass {
+    export interface CustomClass {
         number: number;
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Cirqus.TypeScript.Config;
 using Cirqus.TypeScript.Model;
+using d60.Cirqus.Commands;
 using Xunit;
 
 namespace Cirqus.TypeScript.Tests
@@ -9,13 +10,35 @@ namespace Cirqus.TypeScript.Tests
     public class ProxyGeneratorContextTests
     {
         [Fact]
+        public void CommandIsExportedAsClass()
+        {
+            var context = new ProxyGeneratorContext(new[] {typeof (CommandClass)}, new Configuration());
+
+            Assert.Contains(
+@"export module Cirqus.TypeScript.Tests {
+    export class CommandClass implements Command {
+
+        constructor(args: {prop: number}) {
+            this.prop = args.prop;
+        }
+
+        $commandType = ""Cirqus.TypeScript.Tests.CommandClass, Cirqus.TypeScript.Tests"";
+        $commandName = ""CommandClass"";
+        prop: number;
+    }
+}
+", context.GetDefinitions(CirqusType.Command));
+
+        }
+
+        [Fact]
         public void EmitOpenGenericTypes()
         {
             var context = new ProxyGeneratorContext(new[] {typeof (GenericClass<>)}, new Configuration());
 
             Assert.Contains(
 @"export module Cirqus.TypeScript.Tests {
-    export class GenericClass<T> {
+    export interface GenericClass<T> {
         
     }
 }
@@ -29,7 +52,7 @@ namespace Cirqus.TypeScript.Tests
 
             Assert.Contains(
 @"export module Cirqus.TypeScript.Tests {
-    export class GenericClass<T, U> {
+    export interface GenericClass<T, U> {
         
     }
 }
@@ -43,13 +66,13 @@ namespace Cirqus.TypeScript.Tests
 
             Assert.Contains(
 @"export module Cirqus.TypeScript.Tests {
-    export class MotherOfGenericClass<T> {
+    export interface MotherOfGenericClass<T> {
         type: Cirqus.TypeScript.Tests.GenericClass<T>;
     }
 }
 
 export module Cirqus.TypeScript.Tests {
-    export class GenericClass<T> {
+    export interface GenericClass<T> {
         
     }
 }
@@ -64,7 +87,7 @@ export module Cirqus.TypeScript.Tests {
 
             Assert.Contains(
 @"export module Cirqus.TypeScript.Tests {
-    export class MotherOfEnumerableOf<T> {
+    export interface MotherOfEnumerableOf<T> {
         type: T[];
     }
 }
@@ -78,7 +101,7 @@ export module Cirqus.TypeScript.Tests {
 
             Assert.Contains(
 @"export module Cirqus.TypeScript.Tests {
-    export class GenericClass<T> {
+    export interface GenericClass<T> {
         
     }
 }
@@ -92,13 +115,13 @@ export module Cirqus.TypeScript.Tests {
 
             Assert.Contains(
 @"export module Cirqus.TypeScript.Tests {
-    export class FatherOfGenericClass {
+    export interface FatherOfGenericClass {
         type: Cirqus.TypeScript.Tests.GenericClass<number>;
     }
 }
 
 export module Cirqus.TypeScript.Tests {
-    export class GenericClass<T> {
+    export interface GenericClass<T> {
         
     }
 }
@@ -118,7 +141,7 @@ export module Cirqus.TypeScript.Tests {
 
             Assert.Contains(
 @"export module HAT.Tests {
-    export class SomeClass {
+    export interface SomeClass {
         
     }
 }
@@ -134,7 +157,7 @@ export module Cirqus.TypeScript.Tests {
             Assert.Contains(
                 @"
 export module Cirqus.TypeScript.Tests {
-    export class GenericClassWithTypeArgumentProperty<T> {
+    export interface GenericClassWithTypeArgumentProperty<T> {
         item: T;
     }
 }
@@ -185,7 +208,7 @@ export module Cirqus.TypeScript.Tests {
             Assert.Contains(
 @"
 export module Cirqus.TypeScript.Tests {
-    export class ClassWithEnum {
+    export interface ClassWithEnum {
         enum: Cirqus.TypeScript.Tests.Enum;
     }
 }
@@ -208,7 +231,7 @@ export module Cirqus.TypeScript.Tests {
             Assert.Contains(
 @"
 export module Cirqus.TypeScript.Tests {
-    export class ClassWithEnum {
+    export interface ClassWithEnum {
         enum: Cirqus.TypeScript.Tests.Enum;
     }
 }
@@ -246,6 +269,11 @@ export module Cirqus.TypeScript.Tests {
         None = 2,
         Value1 = 4,
         Value2 = 6
+    }
+
+    public class CommandClass : Command
+    {
+        public int Prop { get; set; }
     }
 
     public class GenericClass<T> { }
