@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Config\TypeScriptConfigurator.cs" />
+    <Compile Include="Config\TypeScriptIgnoreAttribute.cs" />
     <Compile Include="Generation\ProxyGenerationResult.cs" />
     <Compile Include="Generation\ProxyGenerator.cs" />
     <Compile Include="Model\BuiltInTypeDef.cs" />

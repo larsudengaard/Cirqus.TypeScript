@@ -249,13 +249,17 @@ namespace Cirqus.TypeScript.Model
 
             _types[type] = typeDef;
 
-            var ignoredProperties = _configuration
+            var propertiesIgnoredInConfig = _configuration
                 .IgnoredProperties
                 .Where(x => x.IsForType(type))
                 .Select(x => x.PropertyName)
                 .ToList();
 
-            var properties = GetAllProperties(type).Where(x => !ignoredProperties.Contains(x.Name));
+            var properties = GetAllProperties(type)
+                .Where(x => !propertiesIgnoredInConfig.Contains(x.Name))
+                .Where(x => x.GetCustomAttribute<TypeScriptIgnoreAttribute>() == null)
+                .Where(x => typeDef.CirqusType != CirqusType.Command || x.Name != "Meta");
+
             foreach (var property in properties)
             {
                 Console.WriteLine("Generating property {0}", property.Name);
@@ -264,8 +268,6 @@ namespace Cirqus.TypeScript.Model
                     new PropertyDef(
                         GetOrCreateTypeDef(property.PropertyType),
                         property.Name);
-
-                if (typeDef.CirqusType == CirqusType.Command && propertyDef.Name == "Meta") continue;
 
                 typeDef.AddProperty(propertyDef);
             }

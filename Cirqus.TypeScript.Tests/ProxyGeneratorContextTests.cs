@@ -10,7 +10,7 @@ namespace Cirqus.TypeScript.Tests
     public class ProxyGeneratorContextTests
     {
         [Fact]
-        public void CommandIsExportedAsClass()
+        public void CommandIsExportedAsClassAndMetaDataIsIgnored()
         {
             var context = new ProxyGeneratorContext(new[] {typeof (CommandClass)}, new Configuration());
 
@@ -29,6 +29,20 @@ namespace Cirqus.TypeScript.Tests
 }
 ", context.GetDefinitions(CirqusType.Command));
 
+        }
+
+        [Fact]
+        public void IgnoresMarkedProperties()
+        {
+            var context = new ProxyGeneratorContext(new[] { typeof(ClassWithIgnoredProperty) }, new Configuration());
+
+            Assert.Contains(
+@"export module Cirqus.TypeScript.Tests {
+    export interface ClassWithIgnoredProperty {
+        
+    }
+}
+", context.GetDefinitions(CirqusType.Other));
         }
 
         [Fact]
@@ -57,6 +71,12 @@ namespace Cirqus.TypeScript.Tests
     }
 }
 ", context.GetDefinitions(CirqusType.Other));
+        }
+
+        [Fact]
+        public void IgnoredPropertiesArea()
+        {
+            
         }
 
         [Fact]
@@ -301,6 +321,12 @@ export module Cirqus.TypeScript.Tests {
 
     public class SomeClass
     {
-        
+
+    }
+
+    public class ClassWithIgnoredProperty
+    {
+        [TypeScriptIgnore]
+        public int NobodyLikesMe { get; set; }
     }
 }
