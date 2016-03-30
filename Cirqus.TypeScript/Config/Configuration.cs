@@ -6,17 +6,17 @@ namespace Cirqus.TypeScript.Config
 {
     public class Configuration
     {
+        public List<Type> Types { get; private set; }
         public List<IgnoredPropertyConfiguration> IgnoredProperties { get; private set; }
         public List<BuiltInTypeUsageConfiguration> BuiltInTypeUsages { get; private set; }
         public List<Tuple<string, string>>  NamespaceAliases { get; private set; }
-        public List<Type> AdditionalTypes { get; private set; }
 
         internal Configuration()
         {
+            Types = new List<Type>();
             IgnoredProperties = new List<IgnoredPropertyConfiguration>();
             BuiltInTypeUsages = new List<BuiltInTypeUsageConfiguration>();
             NamespaceAliases = new List<Tuple<string, string>>();
-            AdditionalTypes = new List<Type>();
         }
 
         public class BuiltInTypeUsageConfiguration

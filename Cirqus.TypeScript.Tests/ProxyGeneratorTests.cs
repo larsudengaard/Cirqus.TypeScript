@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Cirqus.TypeScript.Config;
 using Cirqus.TypeScript.Generation;
-using Cirqus.TypeScript.Model;
 using Xunit;
 
 namespace Cirqus.TypeScript.Tests
@@ -14,8 +11,7 @@ namespace Cirqus.TypeScript.Tests
         {
             public ConfiguratorThatIncludesCustomTypes()
             {
-                Include<CustomClass>();
-                Include<CustomEnum>();
+                Include(GetType().Assembly.GetTypes().Where(x => x.Name.StartsWith("Custom")));
             } 
         }
 
@@ -23,7 +19,6 @@ namespace Cirqus.TypeScript.Tests
         public void EmitsIncludedClasses()
         {
             var results = new ProxyGenerator().GetProxyGenerationResults(
-                new[] { typeof (CustomClass)}, 
                 new ConfiguratorThatIncludesCustomTypes().Configure());
 
             Assert.Contains(
@@ -39,7 +34,6 @@ namespace Cirqus.TypeScript.Tests
         public void EmitsIncludedEnums()
         {
             var results = new ProxyGenerator().GetProxyGenerationResults(
-                new[] { typeof(CustomClass) },
                 new ConfiguratorThatIncludesCustomTypes().Configure());
 
             Assert.Contains(
@@ -55,7 +49,6 @@ namespace Cirqus.TypeScript.Tests
         {
             public int Number { get; set; }
         }
-
 
         public enum CustomEnum
         {

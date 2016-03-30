@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -21,6 +22,7 @@ namespace Cirqus.TypeScript.Config
         public void IgnoreProperty<T>(Expression<Func<T, object>> propertyExpression)
         {
             var propertyInfo = GetPropertyInfo(propertyExpression);
+
             _configuration.IgnoredProperties.Add(new Configuration.IgnoredPropertyConfiguration(typeof (T), propertyInfo.Name));
         }
 
@@ -29,9 +31,19 @@ namespace Cirqus.TypeScript.Config
             _configuration.BuiltInTypeUsages.Add(new Configuration.BuiltInTypeUsageConfiguration(predicate, tsType));
         }
 
-        public void Include<T>()
+        public void Include(IEnumerable<Type> types)
         {
-            _configuration.AdditionalTypes.Add(typeof(T));
+            _configuration.Types.AddRange(types);
+        }
+
+        public void Include<T>(params Expression<Func<T, object>>[] ignore)
+        {
+            foreach (var expression in ignore)
+            {
+                IgnoreProperty(expression);
+            }
+
+            _configuration.Types.Add(typeof(T));
         }
 
         public void AliasNamespace(string @namespace, string alias)
